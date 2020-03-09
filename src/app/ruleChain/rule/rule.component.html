@@ -1,0 +1,84 @@
+<mat-toolbar color="primary">
+    <mat-toolbar-row>
+        <button mat-button color="secondary" matTooltip="Save rule" (click)="goBack()">
+           <mat-icon>keyboard_arrow_left</mat-icon> BACK
+          </button>
+      <span class="example-spacer"></span>
+      <button *ngIf="!hasRule"  mat-button color="secondary" matTooltip="Save rule" (click)="saveRule()">
+        <mat-icon>save</mat-icon> SAVE
+      </button>
+      <button *ngIf="hasRule"  mat-button color="secondary" matTooltip="Save rule" (click)="updateRule()">
+          <mat-icon>save</mat-icon> UPDATE
+        </button>
+    </mat-toolbar-row>
+  </mat-toolbar>
+  <div class="loading-indicator" *ngIf="isPageLoading" >
+    <mat-spinner style="margin:0 auto;"></mat-spinner>
+    <h1 style="text-align: center">Loading...</h1>
+  </div>
+  <div class="fc-container" *ngIf="!isPageLoading" >
+    <div class="fc-left-pane">
+      <mat-accordion>
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon
+                class="example-icon"
+                aria-hidden="false"
+                aria-label="Enrichment"
+                >playlist_add</mat-icon
+              >
+              Enrichment
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+  
+          <mat-panel-description>
+            <fc-canvas
+              [model]="enrichmentTypesModel"
+              [selectedObjects]="nodeTypesFlowchartselected"
+              [automaticResize]="false"
+              [dropTargetId]="'fc-target-canvas'"
+            >
+            </fc-canvas>
+          </mat-panel-description>
+        </mat-expansion-panel>
+  
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              <mat-icon
+                class="example-icon"
+                aria-hidden="false"
+                aria-label="Flash"
+                >flash_on</mat-icon
+              >
+              Action
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+  
+          <mat-panel-description>
+            <fc-canvas
+              [model]="actionTypesModel"
+              [selectedObjects]="nodeTypesFlowchartselected"
+              [automaticResize]="false"
+              [dropTargetId]="'fc-target-canvas'"
+            >
+            </fc-canvas>
+          </mat-panel-description>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+    <div class="fc-right-pane">
+      <fc-canvas
+        #fcCanvas
+        id="fc-target-canvas"
+        [model]="model"
+        [selectedObjects]="flowchartselected"
+        [edgeStyle]="flowchartConstants.curvedStyle"
+        [userCallbacks]="callbacks"
+        [automaticResize]="true"
+        [dragAnimation]="flowchartConstants.dragAnimationRepaint"
+      >
+      </fc-canvas>
+    </div>
+  </div>
