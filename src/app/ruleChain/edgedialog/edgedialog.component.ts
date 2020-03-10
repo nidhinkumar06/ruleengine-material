@@ -14,8 +14,7 @@ export class EdgedialogComponent implements OnInit {
     this.selectedOption = data.option;
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   save() {
     this.dialogRef.close(this.selectedOption);

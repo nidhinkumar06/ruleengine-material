@@ -2,7 +2,7 @@ import { Component, OnInit, HostBinding, ViewChild, HostListener } from '@angula
 import { RuleService } from '../rule.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { of } from 'rxjs';
-import { map, some } from 'lodash';
+import { map, some, find, maxBy } from 'lodash';
 import { ENRICHMENT_NODE_DATA } from 'src/constants/constants';
 import { DELETE } from '@angular/cdk/keycodes';
 import { EdgedialogComponent } from '../edgedialog/edgedialog.component';
@@ -11,6 +11,7 @@ import { FlowchartConstants, FcModel, UserCallbacks, FcNode } from '../../../flo
 import { NgxFlowchartComponent } from '../../../flowchart/ngx-flowchart.component';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { Colors } from '../../../constants/colors';
 
 @Component({
   selector: 'app-rule',
@@ -63,47 +64,48 @@ export class RuleComponent implements OnInit {
   ruleDataId: number;
   isPageLoading = false;
   hasRule = false;
+  ruleName: string;
 
   callbacks: UserCallbacks = {
-    edgeDoubleClick: (event, edge) => {},
+    edgeDoubleClick: (event, edge) => { },
     edgeEdit: (event, edge) => {
-      this.openEdgeDialog(edge);
+      this.openEdgeDialog(edge, 'edit');
     },
-    edgeMouseOver: event => {},
+    edgeMouseOver: event => { },
     isValidEdge: (source, destination) => {
       return source.type === FlowchartConstants.rightConnectorType && destination.type === FlowchartConstants.leftConnectorType;
     },
     createEdge: (event, edge) => {
       edge.label = 'Yes';
-      this.openEdgeDialog(edge);
+      this.openEdgeDialog(edge, 'create');
       return of(edge);
     },
     dropNode: (event, node) => {
       if (node.type === 'node') {
-        this.openDialog(node);
+        this.openDialog(node, 'create');
       } else {
         this.saveModal(node);
       }
     },
-    edgeAdded: edge => {},
-    nodeRemoved: node => {},
-    edgeRemoved: edge => {},
+    edgeAdded: edge => { },
+    nodeRemoved: node => { },
+    edgeRemoved: edge => { },
     nodeCallbacks: {
-      doubleClick: event => {},
+      doubleClick: event => { },
       nodeEdit: (event, node) => {
         if (node.type === 'node') {
-          this.openDialog(node);
+          this.openDialog(node, 'edit');
         } else {
-          this.saveModal(node);
+          console.log('if edit needs to be enabled then input for the action is needed');
+          // this.saveModal(node);
         }
       }
     }
   };
 
-  @ViewChild('fcCanvas', {static: true}) fcCanvas: NgxFlowchartComponent;
+  @ViewChild('fcCanvas', { static: true }) fcCanvas: NgxFlowchartComponent;
 
-
-  openDialog(node: any) {
+  openDialog(node: any, type: string) {
     const dialogConfig = new MatDialogConfig();
 
     dialogConfig.disableClose = true;
@@ -119,52 +121,67 @@ export class RuleComponent implements OnInit {
     const dialogRef = this.dialog.open(RuledialogComponent, dialogConfig);
 
     dialogRef.afterClosed().subscribe(result => {
-        node.id = (this.nextNodeID++) + '';
-        node.name = result.fact;
+      if (result) {
+        if (type === 'edit') {
+          const filteredNode = find(this.model.nodes, ['id', node.id]);
+          filteredNode.name = result.fact;
+          filteredNode.conditions = result;
+        } else {
+          const maximumNumber = maxBy(this.model.nodes, 'id');
+          const connectorMaxId = maxBy(maximumNumber && maximumNumber.connectors, 'id');
 
-        node.conditions = result;
-        node.connectors = [
-          {
-            id: (this.nextConnectorID++) + '',
-            type: FlowchartConstants.leftConnectorType
-          },
-          {
-            id: (this.nextConnectorID++) + '',
-            type: FlowchartConstants.rightConnectorType
-          }
-        ];
-        //add the condition to remove duplicate values
-        this.model.nodes.push(node);
-      });
+          this.nextNodeID = maximumNumber ? Number(maximumNumber.id) + 1 : this.nextNodeID;
+          this.nextConnectorID = connectorMaxId ? Number(connectorMaxId.id) + 1 : this.nextConnectorID;
+
+          node.id = (this.nextNodeID++) + '';
+          node.name = result.fact;
+
+          node.conditions = result;
+          node.connectors = [
+            {
+              id: (this.nextConnectorID++) + '',
+              type: FlowchartConstants.leftConnectorType
+            },
+            {
+              id: (this.nextConnectorID++) + '',
+              type: FlowchartConstants.rightConnectorType
+            }
+          ];
+          this.model.nodes.push(node);
+        }
+      }
+    });
   }
 
-  openEdgeDialog(edge: any) {
+  openEdgeDialog(edge: any, type: string) {
     const edgeDialogConfig = new MatDialogConfig();
 
     edgeDialogConfig.disableClose = true;
     edgeDialogConfig.autoFocus = true;
 
     edgeDialogConfig.data = {
-      option:  edge.label || 'Yes',
+      option: edge.label || 'Yes',
     };
 
     const dialogRef = this.dialog.open(EdgedialogComponent, edgeDialogConfig);
 
     dialogRef.afterClosed().subscribe(result => {
       map(this.model.nodes, (node: any) => {
-        const isSourceIdMatches = some(node.connectors, {id: edge.source});
-        const isDestinationIdMatches = some(node.connectors, {id: edge.destination});
-        if (isSourceIdMatches) {
-          edge.source_id = node.id;
-          edge.source_condition = node.conditions;
-          edge.source_type = node.type;
-        }
+        if (type === 'create') {
+          const isSourceIdMatches = some(node.connectors, { id: edge.source });
+          const isDestinationIdMatches = some(node.connectors, { id: edge.destination });
+          if (isSourceIdMatches) {
+            edge.source_id = node.id;
+            edge.source_condition = node.conditions;
+            edge.source_type = node.type;
+          }
 
-        if (isDestinationIdMatches) {
-          edge.destination_id = node.id;
-          edge.destination_type = node.type;
-          if (node.type === 'action') {
-            edge.destination_action = node.name;
+          if (isDestinationIdMatches) {
+            edge.destination_id = node.id;
+            edge.destination_type = node.type;
+            if (node.type === 'action') {
+              edge.destination_action = node.name;
+            }
           }
         }
       });
@@ -174,6 +191,13 @@ export class RuleComponent implements OnInit {
   }
 
   saveModal(node: any) {
+    const maximumNumber = maxBy(this.model.nodes, 'id');
+    const connectorMaxId = maxBy(maximumNumber && maximumNumber.connectors, 'id');
+
+    this.nextNodeID = maximumNumber ? Number(maximumNumber.id) + 1 : this.nextNodeID;
+    this.nextConnectorID = connectorMaxId ? Number(connectorMaxId.id) + 1 : this.nextConnectorID;
+
+
     node.id = (this.nextNodeID++) + '';
     node.connectors = [
       {
@@ -184,9 +208,11 @@ export class RuleComponent implements OnInit {
     this.model.nodes.push(node);
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
-  ngAfterViewInit(): void {}
+  ngAfterViewInit(): void {
+    // console.log('fccanvas', this.fcCanvas);
+  }
 
   createActionData(actionDatas: any) {
     actionDatas.map((data, index) => {
@@ -195,7 +221,7 @@ export class RuleComponent implements OnInit {
         id: data.id + '',
         x: 25,
         y: 75 * (index + 1),
-        color: '#DEC111',
+        color: Colors.ACCENT,
         icon: 'flash_on',
         type: 'action',
         connectors: [
@@ -211,6 +237,7 @@ export class RuleComponent implements OnInit {
   }
 
   initData() {
+    this.ruleName = localStorage.getItem('RULE_NAME');
     this.isPageLoading = true;
     this.route.params.subscribe(params => {
       this.ruleId = params.id;
@@ -219,24 +246,22 @@ export class RuleComponent implements OnInit {
     this.ruleService.fetchActions().subscribe(data => {
       this.createActionData(data);
     }, error => {
-      console.log('error in fetchActions', error);
+      this.toast.error(error.message);
     });
     const ruleIdParams = {
       rule_id: this.ruleId
     };
     this.ruleService.fetchRuleById(ruleIdParams).subscribe(data => {
-      console.log('this.model is', this.model);
       if (data.length > 0) {
         this.hasRule = true;
-        const rule  = data[0].rule;
+        const rule = data[0].rule;
         this.ruleDataId = data[0].id;
-        console.log('rule is', rule);
         this.model.nodes.push(...rule.nodes);
         this.model.edges.push(...rule.edges);
       }
       this.isPageLoading = false;
     }, error => {
-     this.isPageLoading = false;
+      this.isPageLoading = false;
     });
   }
 
@@ -265,10 +290,11 @@ export class RuleComponent implements OnInit {
       }
     };
     this.isPageLoading = true;
+
     this.ruleService.createRuleEngine(params).subscribe(result => {
-     this.isPageLoading = false;
-     this.toast.success('Rule created successfully');
-     this.goBack();
+      this.isPageLoading = false;
+      this.toast.success('Rule created successfully');
+      this.goBack();
     }, error => {
       this.isPageLoading = false;
       this.toast.error(error.message);
@@ -283,16 +309,15 @@ export class RuleComponent implements OnInit {
       }
     };
     this.isPageLoading = true;
-    console.log('ruleDataid', this.ruleDataId);
-    console.log('updated model is', this.model);
-    // this.ruleService.updateRuleEngine(params, this.ruleDataId).subscribe(result => {
-    //   this.isPageLoading = false;
-    //   this.toast.success('Rule updated successfully');
-    //   this.goBack();
-    // }, error => {
-    //   this.isPageLoading = false;
-    //   this.toast.error(error.message);
-    // });
+
+    this.ruleService.updateRuleEngine(params, this.ruleDataId).subscribe(result => {
+      this.isPageLoading = false;
+      this.toast.success('Rule updated successfully');
+      this.goBack();
+    }, error => {
+      this.isPageLoading = false;
+      this.toast.error(error.message);
+    });
   }
 
   goBack() {

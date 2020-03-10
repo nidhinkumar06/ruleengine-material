@@ -11,7 +11,7 @@
 }
 
 .grid-item {
-  width: 300px;
+  width: 360px;
   padding: 20px;
   margin-bottom: 10px;
   font-size: 30px;
@@ -20,4 +20,13 @@
 .norecord {
   text-align: center;
   padding-top: 100px;
+}
+
+.description {
+  padding-left: 10px;
+}
+
+.example-spacer {
+  flex: 1 1 auto;
+  text-align: center;
 }

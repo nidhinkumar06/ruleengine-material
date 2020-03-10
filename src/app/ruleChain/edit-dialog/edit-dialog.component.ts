@@ -12,8 +12,8 @@ import { ToastrService } from 'ngx-toastr';
 export class EditDialogComponent implements OnInit {
 
   rulesForm = this.formBuilder.group({
-    name: ['', [Validators.required, Validators.maxLength(100)]],
-    description: ['', [Validators.required, Validators.maxLength(500)]]
+    name: ['', [Validators.required, Validators.maxLength(50)]],
+    description: ['', [Validators.required, Validators.maxLength(200)]]
   });
 
   constructor(private formBuilder: FormBuilder,
@@ -21,19 +21,15 @@ export class EditDialogComponent implements OnInit {
               private toast: ToastrService,
               private dialogRef: MatDialogRef<EditDialogComponent>,
               @Inject(MAT_DIALOG_DATA) data) {
-                this.ruleService.getRuleDataById(data.id).subscribe((result: any) => {
-                  console.log('data is', result);
-                  this.rulesForm.patchValue({
-                    name: result.name,
-                    description: result.description
-                  });
-                }, error => {
-                  console.log('error is', error);
-                  console.log('error message', error.message);
-
-                  this.toast.error(error.message);
-                });
-              }
+    this.ruleService.getRuleDataById(data.id).subscribe((result: any) => {
+      this.rulesForm.patchValue({
+        name: result.name,
+        description: result.description
+      });
+    }, error => {
+      this.toast.error(error.message);
+    });
+  }
 
   ngOnInit(): void {
   }

@@ -1,4 +1,5 @@
 import { FlowchartConstants } from '../flowchart/ngx-flowchart.models';
+import { Colors } from './colors';
 
 export const ENRICHMENT_NODE_DATA = [
   {
@@ -6,7 +7,7 @@ export const ENRICHMENT_NODE_DATA = [
     id: '1',
     x: 25,
     y: 75 * 1,
-    color: '#008000',
+    color: Colors.PRIMARY,
     icon: '=',
     type: 'node',
     connectors: [
@@ -25,7 +26,7 @@ export const ENRICHMENT_NODE_DATA = [
     id: '2',
     x: 25,
     y: 75 * 2,
-    color: '#008000',
+    color: Colors.PRIMARY,
     icon: '≠',
     type: 'node',
     connectors: [
@@ -44,7 +45,7 @@ export const ENRICHMENT_NODE_DATA = [
     id: '3',
     x: 25,
     y: 75 * 3,
-    color: '#008000',
+    color: Colors.PRIMARY,
     icon: '>',
     type: 'node',
     connectors: [
@@ -63,7 +64,7 @@ export const ENRICHMENT_NODE_DATA = [
     id: '4',
     x: 25,
     y: 75 * 4,
-    color: '#008000',
+    color: Colors.PRIMARY,
     icon: '<',
     type: 'node',
     connectors: [
@@ -82,7 +83,7 @@ export const ENRICHMENT_NODE_DATA = [
     id: '5',
     x: 25,
     y: 75 * 5,
-    color: '#008000',
+    color: Colors.PRIMARY,
     icon: '≥',
     type: 'node',
     connectors: [
@@ -101,7 +102,7 @@ export const ENRICHMENT_NODE_DATA = [
     id: '6',
     x: 25,
     y: 75 * 6,
-    color: '#008000',
+    color: Colors.PRIMARY,
     icon: '≤',
     type: 'node',
     connectors: [

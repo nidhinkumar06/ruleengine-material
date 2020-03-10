@@ -10,8 +10,8 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 export class AddDialogComponent implements OnInit {
 
   rulesForm = this.formBuilder.group({
-    name: ['', [Validators.required, Validators.maxLength(100)]],
-    description: ['', [Validators.required, Validators.maxLength(500)]]
+    name: ['', [Validators.required, Validators.maxLength(50)]],
+    description: ['', [Validators.required, Validators.maxLength(200)]]
   });
 
   constructor(

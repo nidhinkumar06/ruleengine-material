@@ -19,6 +19,7 @@ export class ListComponent implements OnInit {
   constructor(private ruleService: RuleService, private router: Router, private dialog: MatDialog, private toast: ToastrService) { }
 
   ngOnInit(): void {
+    localStorage.removeItem('RULE_NAME');
     this.fetchRuleData();
   }
 
@@ -123,9 +124,8 @@ export class ListComponent implements OnInit {
     });
   }
 
-  gotoRulePage(id: number) {
-    console.log('goto rule page got called');
-    
-    this.router.navigate(['/rule', id]);
+  gotoRulePage(rule: any) {
+    localStorage.setItem('RULE_NAME', rule.name);
+    this.router.navigate(['/rule', rule.id]);
   }
 }

@@ -1,36 +1,70 @@
-<div class="loading-indicator" *ngIf="isPageLoading" >
+<mat-toolbar color="primary" *ngIf="!isPageLoading && rules.length > 0">
+  <mat-toolbar-row>
+    <span class="example-spacer">Rules Available: {{ rules.length }}</span>
+  </mat-toolbar-row>
+</mat-toolbar>
+
+<div class="loading-indicator" *ngIf="isPageLoading">
   <mat-spinner style="margin:0 auto;"></mat-spinner>
   <h1 style="text-align: center">Loading...</h1>
 </div>
 
-<div class="grid-container" *ngIf="!isPageLoading && rules.length > 0" >
-    <mat-card class="grid-item" *ngFor="let rule of rules" >
-        <mat-card-header>
-          <mat-card-title>{{ rule.name | uppercase }}</mat-card-title>
-        </mat-card-header>
-      <mat-card-content>
-        <p>
-          {{ rule.description }}
-        </p>
-      </mat-card-content>
-      <mat-card-actions class="card-action">
-          <button mat-icon-button aria-label="Example icon-button with a heart icon" color="primary" (click)="gotoRulePage(rule.id)">
-            <mat-icon>remove_red_eye</mat-icon>
-          </button>
-        <button mat-icon-button aria-label="Example icon-button with a heart icon" color="accent" (click)="openEditDialog(rule.id)">
-            <mat-icon>edit</mat-icon>
-        </button>
-        <button mat-icon-button aria-label="Example icon-button with a heart icon" color="warn" (click)="deleteDialog(rule.id)">
-            <mat-icon>delete</mat-icon>
-        </button>
-      </mat-card-actions>
-    </mat-card>
+<div class="grid-container" *ngIf="!isPageLoading && rules.length > 0">
+  <mat-card class="grid-item" *ngFor="let rule of rules">
+    <mat-card-header>
+      <mat-card-title>{{ rule.name | uppercase }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p class="description">
+        {{
+          rule.description.length > 100
+            ? (rule.description | slice: 0:100) + ".."
+            : rule.description
+        }}
+      </p>
+    </mat-card-content>
+    <mat-card-actions class="card-action">
+      <button
+        mat-icon-button
+        matTooltip="View rule"
+        aria-label="Example icon-button with a heart icon"
+        color="primary"
+        (click)="gotoRulePage(rule)"
+      >
+        <mat-icon>remove_red_eye</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        matTooltip="Edit rule"
+        aria-label="Example icon-button with a heart icon"
+        color="accent"
+        (click)="openEditDialog(rule.id)"
+      >
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        matTooltip="Delete rule"
+        aria-label="Example icon-button with a heart icon"
+        color="warn"
+        (click)="deleteDialog(rule.id)"
+      >
+        <mat-icon>delete</mat-icon>
+      </button>
+    </mat-card-actions>
+  </mat-card>
 </div>
 
-<div class="norecord" *ngIf="!isPageLoading && rules.length === 0" >
+<div class="norecord" *ngIf="!isPageLoading && rules.length === 0">
   <img src="assets/nodata.png" />
 </div>
 
-<button mat-fab class="fab" color="primary" (click)="openAddRuleDialog()">
+<button
+  mat-fab
+  class="fab"
+  color="primary"
+  matTooltip="Add new rule"
+  (click)="openAddRuleDialog()"
+>
   <mat-icon>add</mat-icon>
 </button>

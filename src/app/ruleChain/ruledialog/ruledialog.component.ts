@@ -24,7 +24,7 @@ export class RuledialogComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
   save() {
     this.dialogRef.close(this.form.value);

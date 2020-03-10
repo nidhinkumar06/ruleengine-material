@@ -4,7 +4,7 @@
   <div [style.background-color]="node.color" class="innerNode">
     <p>
       <mat-icon class="example-icon" aria-hidden="false" aria-label="add">{{ node.icon }}</mat-icon>
-      {{ node.name }}
+      {{ node.name | titlecase }}
     </p>
 
     <div class="{{flowchartConstants.leftConnectorClass}}">
