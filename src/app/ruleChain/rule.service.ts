@@ -51,4 +51,16 @@ export class RuleService {
     return this.http.get<any>(`${this.url}/v1/rule_details?rule_id=${params.rule_id}`);
   }
 
+  createSqlBuilder(params: any) {
+    return this.http.post<any>(`${this.url}/v1/sql_rule_details`, params);
+  }
+
+  fetchSqlBuilderById(params: any) {
+    return this.http.get<any>(`${this.url}/v1/sql_rule_details?rule_id=${params.rule_id}`);
+  }
+
+  updateSqlBuilder(params: any, id: number) {
+    return this.http.put<any>(`${this.url}/v1/sql_rule_details/${id}`, params);
+  }
+
 }

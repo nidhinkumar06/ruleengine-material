@@ -128,4 +128,9 @@ export class ListComponent implements OnInit {
     localStorage.setItem('RULE_NAME', rule.name);
     this.router.navigate(['/rule', rule.id]);
   }
+
+  gotoSqlBuilder(rule: any) {
+    localStorage.setItem('RULE_NAME', rule.name);
+    this.router.navigate(['/sqlbuilder', rule.id]);
+  }
 }

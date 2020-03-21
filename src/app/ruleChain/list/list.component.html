@@ -26,12 +26,21 @@
     <mat-card-actions class="card-action">
       <button
         mat-icon-button
-        matTooltip="View rule"
+        matTooltip="Rule Engine"
         aria-label="Example icon-button with a heart icon"
         color="primary"
         (click)="gotoRulePage(rule)"
       >
-        <mat-icon>remove_red_eye</mat-icon>
+        <mat-icon>aspect_ratio</mat-icon>
+      </button>
+      <button
+        mat-icon-button
+        matTooltip="SQL Builder"
+        aria-label="Example icon-button with a heart icon"
+        color="warn"
+        (click)="gotoSqlBuilder(rule)"
+      >
+        <mat-icon>line_style</mat-icon>
       </button>
       <button
         mat-icon-button

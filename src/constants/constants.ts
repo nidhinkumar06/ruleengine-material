@@ -1,6 +1,47 @@
 import { FlowchartConstants } from '../flowchart/ngx-flowchart.models';
 import { Colors } from './colors';
 
+export const CONDITION_DATA = [
+  {
+    name: 'and',
+    id: '1',
+    x: 25,
+    y: 75 * 1,
+    color: Colors.SECONDARY,
+    icon: '&',
+    type: 'condition',
+    connectors: [
+      {
+        type: FlowchartConstants.leftConnectorType,
+        id: (1 * 1 + 1) + ''
+      },
+      {
+        type: FlowchartConstants.rightConnectorType,
+        id: (1 * 1 + 2) + ''
+      }
+    ]
+  },
+  {
+    name: 'or',
+    id: '2',
+    x: 25,
+    y: 75 * 2,
+    color: Colors.SECONDARY,
+    icon: '||',
+    type: 'condition',
+    connectors: [
+      {
+        type: FlowchartConstants.leftConnectorType,
+        id: (2 * 2 + 1) + ''
+      },
+      {
+        type: FlowchartConstants.rightConnectorType,
+        id: (2 * 2 + 2) + ''
+      }
+    ]
+  },
+];
+
 export const ENRICHMENT_NODE_DATA = [
   {
     name: 'equal',
@@ -79,7 +120,7 @@ export const ENRICHMENT_NODE_DATA = [
     ]
   },
   {
-    name: 'greaterThanInclusive',
+    name: 'greaterThanEqual',
     id: '5',
     x: 25,
     y: 75 * 5,
@@ -98,7 +139,7 @@ export const ENRICHMENT_NODE_DATA = [
     ]
   },
   {
-    name: 'lessThanInclusive',
+    name: 'lessThanEqual',
     id: '6',
     x: 25,
     y: 75 * 6,

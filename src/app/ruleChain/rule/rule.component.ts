@@ -3,7 +3,7 @@ import { RuleService } from '../rule.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { of } from 'rxjs';
 import { map, some, find, maxBy } from 'lodash';
-import { ENRICHMENT_NODE_DATA } from 'src/constants/constants';
+import { ENRICHMENT_NODE_DATA, CONDITION_DATA } from 'src/constants/constants';
 import { DELETE } from '@angular/cdk/keycodes';
 import { EdgedialogComponent } from '../edgedialog/edgedialog.component';
 import { RuledialogComponent } from '../ruledialog/ruledialog.component';
@@ -33,6 +33,7 @@ export class RuleComponent implements OnInit {
     private toast: ToastrService
   ) {
     this.enrichmentTypesModel.nodes.push(...ENRICHMENT_NODE_DATA);
+    this.conditionTypesModel.nodes.push(...CONDITION_DATA);
     this.initData();
   }
 
@@ -46,6 +47,11 @@ export class RuleComponent implements OnInit {
   };
 
   enrichmentTypesModel: FcModel = {
+    nodes: [],
+    edges: []
+  };
+
+  conditionTypesModel: FcModel = {
     nodes: [],
     edges: []
   };

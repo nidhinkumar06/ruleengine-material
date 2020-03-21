@@ -83,6 +83,30 @@
           </fc-canvas>
         </mat-panel-description>
       </mat-expansion-panel>
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon
+              class="example-icon"
+              aria-hidden="false"
+              aria-label="Flash"
+              >flash_on</mat-icon
+            >
+            Condition
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <mat-panel-description>
+          <fc-canvas
+            [model]="conditionTypesModel"
+            [selectedObjects]="nodeTypesFlowchartselected"
+            [automaticResize]="false"
+            [dropTargetId]="'fc-target-canvas'"
+          >
+          </fc-canvas>
+        </mat-panel-description>
+      </mat-expansion-panel>
     </mat-accordion>
   </div>
   <div class="fc-right-pane">

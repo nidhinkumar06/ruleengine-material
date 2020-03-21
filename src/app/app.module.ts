@@ -31,6 +31,8 @@ import { RuleComponent } from './ruleChain/rule/rule.component';
 import { RuledialogComponent } from './ruleChain/ruledialog/ruledialog.component';
 import { EdgedialogComponent } from './ruleChain/edgedialog/edgedialog.component';
 import { NgxFlowchartModule } from '../flowchart/ngx-flowchart.module';
+import { SqlbuilderComponent } from './ruleChain/sqlbuilder/sqlbuilder.component';
+import { QueryBuilderModule } from 'angular9-query-builder';
 
 @NgModule({
   declarations: [
@@ -41,7 +43,8 @@ import { NgxFlowchartModule } from '../flowchart/ngx-flowchart.module';
     DeleteDialogComponent,
     RuleComponent,
     RuledialogComponent,
-    EdgedialogComponent
+    EdgedialogComponent,
+    SqlbuilderComponent
   ],
   imports: [
     BrowserModule,
@@ -69,6 +72,7 @@ import { NgxFlowchartModule } from '../flowchart/ngx-flowchart.module';
       closeButton: true,
       progressBar: true,
     }),
+    QueryBuilderModule,
     NgxFlowchartModule
   ],
   providers: [],

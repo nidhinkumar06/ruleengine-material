@@ -1,0 +1,39 @@
+<mat-toolbar color="primary">
+  <mat-toolbar-row>
+    <button
+      mat-button
+      color="secondary"
+      matTooltip="Click to go back"
+      (click)="goBack()"
+    >
+      <mat-icon>keyboard_arrow_left</mat-icon> BACK
+    </button>
+    <span class="example-spacer">{{ ruleName }}</span>
+    <button
+      mat-button
+      *ngIf="!hasRule"
+      color="secondary"
+      matTooltip="Save rule"
+      (click)="saveRule()"
+    >
+      <mat-icon>save</mat-icon> SAVE
+    </button>
+
+    <button
+      mat-button
+      *ngIf="hasRule"
+      color="secondary"
+      matTooltip="Update rule"
+      (click)="updateRule()"
+    >
+      <mat-icon>save</mat-icon> UPDATE
+    </button>
+  </mat-toolbar-row>
+</mat-toolbar>
+<div class="loading-indicator" *ngIf="isPageLoading">
+  <mat-spinner style="margin:0 auto;"></mat-spinner>
+  <h1 style="text-align: center">Loading...</h1>
+</div>
+<div class="sqlpadding">
+  <query-builder [(ngModel)]='query' [config]='config'></query-builder>
+</div>
