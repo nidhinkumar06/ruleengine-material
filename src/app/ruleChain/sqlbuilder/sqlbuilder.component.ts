@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { QueryBuilderConfig } from 'angular9-query-builder';
 import { Router, ActivatedRoute } from '@angular/router';
 import { RuleService } from '../rule.service';
+import { flattenDeep, flatMapDeep } from 'lodash';
 
 @Component({
   selector: 'app-sqlbuilder',
@@ -15,6 +16,13 @@ export class SqlbuilderComponent implements OnInit {
   ruleId: number;
   hasRule = false;
   isPageLoading = false;
+  ruleDataId: number;
+  newOne = [];
+
+  existingRule: any = {
+    condition: '',
+    rules: []
+  };
 
   constructor(private router: Router, private route: ActivatedRoute, private ruleService: RuleService, private toast: ToastrService) { }
 
@@ -42,13 +50,11 @@ export class SqlbuilderComponent implements OnInit {
         name: 'Mail',
         type: 'string',
         operators: ['to'],
-        entity: 'action'
       },
-      log: {
-        name: 'Log',
-        type: 'string',
-        entity: 'action'
-      }
+      // log: {
+      //   name: 'Log',
+      //   type: 'string',
+      // }
     }
   };
 
@@ -65,25 +71,89 @@ export class SqlbuilderComponent implements OnInit {
       if (data.length > 0) {
         this.hasRule = true;
         const rule = data[0].rule;
+        this.ruleDataId = data[0].id;
         this.query.condition = rule.condition;
-        this.query.rules = rule.rules;
+
+        if (rule.ruleType === 'multiple') {
+          this.convertRule(rule);
+          this.query.rules = this.existingRule.rules;
+        } else {
+          const temp = rule && rule.rules.map((existingRule: any) => {
+            return existingRule.condition;
+          });
+          this.query.rules = temp;
+        }
       }
       this.isPageLoading = false;
     }, error => {
-      console.log('error is', error);
       this.isPageLoading = false;
     });
   }
 
+  convertRule(data) {
+    const temprule = [];
+    this.existingRule.condition = data.condition;
+    data.rules.forEach((rule) => {
+      console.log('rule is', rule);
+      if (rule) {
+        if (rule.rules) {
+          this.convertRule(rule);
+        } else {
+          temprule.push(rule.condition);
+        }
+        if (data.rules.length === temprule.length) {
+          this.existingRule.rules.push(
+            {
+              condition: data.condition,
+              rules: temprule,
+            });
+        }
+      }
+    });
+  }
+
   saveRule() {
-    console.log('rule is', this.query);
+    this.findObjectByLabel(this.query);
+    let ruleType = '';
+    if (this.newOne.length > 0) {
+      ruleType = 'multiple';
+    } else {
+      ruleType = 'single';
+    }
+
+    const updatedQuery = {
+      condition: this.query.condition,
+      rules: this.newOne,
+      ruleType
+    };
+    // const queryDetail = this.query.rules.map((query: any) => {
+    //   const temp: any = {
+    //     condition: {
+    //       ...query
+    //     }
+    //   };
+    //   if (query.field === 'mail' || query.field === 'log') {
+    //     temp.type = 'action';
+    //   } else {
+    //     temp.type = 'condition';
+    //   }
+    //   return temp;
+    // });
+
+    // console.log('queryDetail', queryDetail);
+
+
+    // const updatedQuery = {
+    //   condition: this.query.condition,
+    //   rules: queryDetail
+    // };
+
     const params = {
       sqlRuleDetail: {
         rule_id: this.ruleId,
-        rule: this.query
+        rule: updatedQuery
       }
     };
-
     this.isPageLoading = true;
     this.ruleService.createSqlBuilder(params).subscribe(result => {
       this.isPageLoading = false;
@@ -93,20 +163,75 @@ export class SqlbuilderComponent implements OnInit {
       this.toast.error(error.message);
       this.isPageLoading = false;
     });
-    console.log('params is', params);
   }
 
+  findObjectByLabel(data) {
+    const rules: any = [];
+    data.rules.forEach((rule, index) => {
+      if (rule.rules) {
+        this.findObjectByLabel(rule);
+      } else {
+        rules[index] = {
+          condition: {
+            field: rule.field,
+            operator: rule.operator,
+            value: rule.value
+          },
+          type: rule.field === 'mail' || rule.field === 'log' ? 'action' : 'condition'
+        };
+      }
+    });
+    if (rules.length > 0) {
+      this.newOne.push({
+        condition: data.condition,
+        rules
+      });
+    }
+  }
+
+
   updateRule() {
-    console.log('update rule is', this.query);
+    // const queryDetail = this.query.rules.map((query: any) => {
+    //   const temp: any = {
+    //     condition: {
+    //       ...query
+    //     }
+    //   };
+    //   if (query.field === 'mail' || query.field === 'log') {
+    //     temp.type = 'action';
+    //   } else {
+    //     temp.type = 'condition';
+    //   }
+    //   return temp;
+    // });
+    // const updatedQuery = {
+    //   condition: this.query.condition,
+    //   rules: queryDetail
+    // };
+
+    this.findObjectByLabel(this.query);
+    let ruleType = '';
+    if (this.newOne.length > 0) {
+      ruleType = 'multiple';
+    } else {
+      ruleType = 'single';
+    }
+
+    const updatedQuery = {
+      condition: this.query.condition,
+      rules: this.newOne,
+      ruleType
+    };
 
     const params = {
       sqlRuleDetail: {
         rule_id: this.ruleId,
-        rule: this.query
+        rule: updatedQuery
       }
     };
+    console.log('params is', params);
     this.isPageLoading = true;
-    this.ruleService.updateSqlBuilder(params, this.ruleId).subscribe(() => {
+    this.ruleService.updateSqlBuilder(params, this.ruleDataId).subscribe(() => {
       this.isPageLoading = false;
       this.toast.success('Sql builder updated successfully');
       this.goBack();
